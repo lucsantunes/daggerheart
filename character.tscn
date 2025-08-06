@@ -42,21 +42,24 @@ _data = {
 [node name="Character" type="CharacterBody2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.05, 0.05)
+scale = Vector2(0.15, 0.15)
 texture = ExtResource("1_pjt0s")
 
 [node name="Focus" type="Sprite2D" parent="."]
 visible = false
-position = Vector2(0, 40)
-scale = Vector2(0.03, 0.03)
+position = Vector2(0, 127)
+scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_wa5vi")
 
 [node name="ProgressBar" type="ProgressBar" parent="."]
-offset_left = -20.0
-offset_top = -43.0
-offset_right = 60.0
-offset_bottom = -16.0
-scale = Vector2(0.5, 0.5)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -40.0
+offset_top = -110.0
+offset_right = 40.0
+offset_bottom = -83.0
+grow_horizontal = 2
 value = 100.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
