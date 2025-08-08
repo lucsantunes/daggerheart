@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://mb2ju0e76l7y"
-path="res://.godot/imported/bandit.png-3ac1ede187ef86eac80ee376424f1480.ctex"
+uid="uid://dj62lr2qmxh2y"
+path="res://.godot/imported/warrior.png-4a3e9e4b5fe8804c5ae9b9af100cb95b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/bandit.png"
-dest_files=["res://.godot/imported/bandit.png-3ac1ede187ef86eac80ee376424f1480.ctex"]
+source_file="res://backup/tutorial_jrpg_16bit/images/warrior.png"
+dest_files=["res://.godot/imported/warrior.png-4a3e9e4b5fe8804c5ae9b9af100cb95b.ctex"]
 
 [params]
 

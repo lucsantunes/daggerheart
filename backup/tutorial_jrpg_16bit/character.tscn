@@ -1,22 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://ccs1g7w0le5ir"]
 
-[ext_resource type="Texture2D" uid="uid://mb2ju0e76l7y" path="res://images/bandit.png" id="1_pjt0s"]
-[ext_resource type="Texture2D" uid="uid://de3nssyfujmcg" path="res://images/cursor.png" id="2_wa5vi"]
-
-[sub_resource type="Animation" id="Animation_wfnr8"]
-resource_name = "hurt"
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:self_modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 0,
-"values": [Color(30, 1, 1, 1), Color(1, 1, 1, 1), Color(30, 1, 1, 1), Color(1, 1, 1, 1)]
-}
+[ext_resource type="Texture2D" uid="uid://mb2ju0e76l7y" path="res://backup/tutorial_jrpg_16bit/images/bandit.png" id="1_pjt0s"]
+[ext_resource type="Texture2D" uid="uid://de3nssyfujmcg" path="res://backup/tutorial_jrpg_16bit/images/cursor.png" id="2_wa5vi"]
 
 [sub_resource type="Animation" id="Animation_px5sl"]
 length = 0.001
@@ -31,6 +16,21 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_wfnr8"]
+resource_name = "hurt"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(30, 1, 1, 1), Color(1, 1, 1, 1), Color(30, 1, 1, 1), Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_0qfo5"]

@@ -1,0 +1,10 @@
+speaker,listener,situation,variant,style,text
+system,all,roll fear,generic,narration,O medo prevalece... ({hope} < {fear}).
+system,all,roll fear,generic,narration,Não há esperança... ({hope} < {fear}).
+system,all,roll fear,generic,narration,O medo me domina... ({hope} < {fear}).
+system,all,roll hope,generic,narration,Avance com esperança! ({hope} > {fear}).
+system,all,roll hope,generic,narration,Ainda há esperança. ({hope} > {fear}).
+system,all,roll hope,generic,narration,Que sorte a sua com esperança! ({hope} > {fear}).
+system,all,roll tie,generic,narration,CRÍTICO! ({hope} = {fear}).
+system,all,roll tie,generic,narration,É isso aí! ({hope} = {fear}).
+system,all,roll tie,generic,narration,CRÍTICO NELES!!! ({hope} = {fear})

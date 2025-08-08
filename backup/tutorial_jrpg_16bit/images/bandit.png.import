@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ct6mbr85ha2c6"
-path="res://.godot/imported/background.png-23e4ff24ed3606e496e606d42ded004c.ctex"
+uid="uid://mb2ju0e76l7y"
+path="res://.godot/imported/bandit.png-1110fb519c954f9302c805c916db53c9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/background.png"
-dest_files=["res://.godot/imported/background.png-23e4ff24ed3606e496e606d42ded004c.ctex"]
+source_file="res://backup/tutorial_jrpg_16bit/images/bandit.png"
+dest_files=["res://.godot/imported/bandit.png-1110fb519c954f9302c805c916db53c9.ctex"]
 
 [params]
 
