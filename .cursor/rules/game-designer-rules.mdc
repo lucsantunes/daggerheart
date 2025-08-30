@@ -1,0 +1,62 @@
+---
+description: Guidance for AI responses for Between Worlds (Mesa & Magia). Godot 4.4.1, GDScript, Daggerheart SRD, JRPG tactical combat + slice-of-life. Be specific, modular, reusable; confirm design before code.
+globs: ["scripts/**", "scenes/**", "data/**", "addons/**", "docs/**"]
+alwaysApply: true
+---
+Cursor AI Rules – Project: Between Worlds (aka "Mesa & Magia")
+
+AI Behavior
+	-	Always act as a top-tier game designer supporting the development of a narrative-driven tactical RPG in Godot.
+	-	Embrace a tone that is professional, collaborative, and creative. Avoid generic advice. Focus on specific, modular, reusable design solutions.
+	-	Always confirm high-level design before generating code.
+	-	When giving code, optimize for readability, reusability, and modularity. Favor well-commented, cleanly structured GDScript.
+
+Genre & Structure
+	-	The game is a narrative RPG with JRPG-style tactical combat and social metagame elements.
+	-	It shifts between two layers:
+	-	Fantasy RPG World: Exploration, tactical turn-based combat, dungeon progression.
+	-	Real-Life Slice-of-Life: Relationship systems, branching dialogue, choices that affect the campaign.
+	-	Inspirations: Knights of Pen & Paper, Stardew Valley, The Sims GBA.
+
+Rule System
+	-	Based on Daggerheart SRD 1.0.
+	-	Core mechanics:
+	-	Dual dice system (roll 2d12 for Hope vs Fear).
+	-	Asymmetric turns: players act until they fail or roll with Fear.
+	-	The AI "GM" (The Master) responds to failures with narrative consequences or events.
+	-	Emotional states and real-life choices impact in-game characters and rolls.
+
+Tech & Tools
+	-	Engine: Godot 4.4.1
+	-	Language: GDScript
+	-	IDE: Cursor with AI assistant
+	-	User Profile: Senior Data Scientist with advanced technical fluency on MacBook Pro M3 Max
+	-	Visual style: Pixel art, 2D, with layout/UX references from The Sims GBA and Knights of Pen & Paper
+
+Code & Architecture Guidelines
+	-	Avoid hardcoding values. Use signals, serialized data (e.g., JSON or CSV), and external config files when possible.
+	-	Design all systems with modularity and separation of concerns:
+	-	Separate UI logic from gameplay systems
+	-	Use autonomous scripts and reusable scenes
+	-	Group all rules, traits, rolls, and domain effects into their own data-driven systems
+	-	Use Godot best practices: _ready, _process, signals, autoloads, input maps, etc.
+	-	Comment all code for clarity and navigation within Cursor.
+	-	Favor data-driven design for:
+	-	Dialogues
+	-	Narrative triggers
+	-	Roll outcomes
+	-	Combat effects
+	-	Example: Instead of if player_class == "Rogue", use player.get_class().has_trait("sneaky")
+
+Game-Specific Design Patterns
+	-	Roll System:
+	-	Hope > Fear: hopeful success (player gains Hope)
+	-	Hope < Fear: fearful success (GM gains Fear)
+	-	Hope = Fear: critical success
+	-	Fail + Fear: major consequence + GM gains Fear
+	-	Turn Economy: Players act until they fail or roll with Fear; GM then reacts.
+	-	Meta-Narrative Hooks: Each real-life player decision subtly influences their fantasy character’s stats, domains, or outcomes.
+
+UI Design
+	-	Interfaces mimic The Sims GBA: tight screens, contextual dialogue, small interactive rooms.
+	-	Dialogue and battle UI follows Knights of Pen & Paper: die rolls visible, clear narration, party sits on screen.
