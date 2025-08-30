@@ -1,6 +1,6 @@
 extends Node
 
-@onready var chat_log = $"../UI/ChatLog"
+@onready var chat_log = $"../UI/ChatScroll/ChatLog"
 
 
 func narrate_roll(speaker: String, listener: String, result_type: String, variant: String, values: Dictionary):

@@ -1,7 +1,7 @@
 extends Node2D
 
 @onready var dice_roller = $DiceRoller
-@onready var chat_log = $UI/ChatLog
+@onready var chat_log = $UI/ChatScroll/ChatLog
 @onready var narrator = $Narrator
 @onready var turn_manager = $TurnManager
 @onready var action_panel = $UI/ActionButtonsPanel

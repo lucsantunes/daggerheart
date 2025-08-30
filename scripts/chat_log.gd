@@ -13,6 +13,7 @@ func add_entry(speaker: String, text: String, style: String) -> void:
 	messages.append(message)
 	_render_message(message)
 	emit_signal("message_added", message)
+	_autoscroll_last()
 
 
 func _render_message(message: Dictionary) -> void:
@@ -34,3 +35,14 @@ func _render_message(message: Dictionary) -> void:
 			label.text = "%s: %s" % [message.speaker, message.text]
 
 	add_child(label)
+
+
+func _autoscroll_last() -> void:
+	var parent_scroll := get_parent()
+	if parent_scroll and parent_scroll is ScrollContainer:
+		# Wait one frame to ensure layout/size updates are applied before scrolling
+		await get_tree().process_frame
+		var vbar := (parent_scroll as ScrollContainer).get_v_scroll_bar()
+		if vbar:
+			vbar.value = vbar.max_value
+			print("[ChatLog] Autoscroll to bottom (value=%d, max=%d)." % [vbar.value, vbar.max_value])
