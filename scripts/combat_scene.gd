@@ -24,6 +24,9 @@ func _ready():
 	# Ensure we start AFTER connections are made
 	turn_manager.start_player_turn()
 
+	# Spawn initial enemy (Bandit)
+	enemy_party.spawn_monster("jagged_knife_bandit")
+
 func _on_player_turn_started() -> void:
 	action_panel.set_buttons_enabled(true)
 	chat_log.add_entry("Sistema", "Sua vez. Escolha uma ação.", "narration")

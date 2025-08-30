@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://33pefra0ylem"
+
+[deps]
+
+files=["res://data/database_monsters.type.translation", "res://data/database_monsters.name.translation", "res://data/database_monsters.difficulty.translation", "res://data/database_monsters.attack.translation", "res://data/database_monsters.weapon.translation", "res://data/database_monsters.weapon.translation", "res://data/database_monsters.weapon.translation", "res://data/database_monsters.experience.translation", "res://data/database_monsters.experience.translation", "res://data/database_monsters.motives.translation", "res://data/database_monsters.hp.translation", "res://data/database_monsters.stress.translation", "res://data/database_monsters.threshold.translation", "res://data/database_monsters.threshold.translation", "res://data/database_monsters.features.translation"]
+
+source_file="res://data/database_monsters.csv"
+dest_files=["res://data/database_monsters.type.translation", "res://data/database_monsters.name.translation", "res://data/database_monsters.difficulty.translation", "res://data/database_monsters.attack.translation", "res://data/database_monsters.weapon.translation", "res://data/database_monsters.weapon.translation", "res://data/database_monsters.weapon.translation", "res://data/database_monsters.experience.translation", "res://data/database_monsters.experience.translation", "res://data/database_monsters.motives.translation", "res://data/database_monsters.hp.translation", "res://data/database_monsters.stress.translation", "res://data/database_monsters.threshold.translation", "res://data/database_monsters.threshold.translation", "res://data/database_monsters.features.translation"]
+
+[params]
+
+compress=true
+delimiter=0
