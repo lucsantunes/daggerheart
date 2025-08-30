@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://cmhkj05a3an5x"]
+[gd_scene load_steps=7 format=3 uid="uid://cmhkj05a3an5x"]
 
 [ext_resource type="Script" uid="uid://cpww8t4kmsgfu" path="res://scripts/combat_scene.gd" id="1_rx5ct"]
 [ext_resource type="Script" uid="uid://72u2gj6ml2wd" path="res://scripts/chat_log.gd" id="2_h7esm"]
 [ext_resource type="Script" uid="uid://ce0jok7n3631p" path="res://scripts/dice_roller.gd" id="3_yi6w0"]
 [ext_resource type="Script" uid="uid://dmqssbjueusmn" path="res://scripts/narrator.gd" id="4_h7esm"]
+[ext_resource type="Script" path="res://scripts/turn_manager.gd" id="5_9ukp0"]
+[ext_resource type="Script" path="res://scripts/ui_action_buttons_panel.gd" id="6_1abcp"]
 
 [node name="CombatScene" type="Node2D"]
 script = ExtResource("1_rx5ct")
@@ -19,8 +21,18 @@ offset_right = 1888.0
 offset_bottom = 1048.0
 script = ExtResource("2_h7esm")
 
+[node name="ActionButtonsPanel" type="HBoxContainer" parent="UI"]
+offset_left = 48.0
+offset_top = 968.0
+offset_right = 928.0
+offset_bottom = 1048.0
+script = ExtResource("6_1abcp")
+
 [node name="DiceRoller" type="Node" parent="."]
 script = ExtResource("3_yi6w0")
 
 [node name="Narrator" type="Node" parent="."]
 script = ExtResource("4_h7esm")
+
+[node name="TurnManager" type="Node" parent="."]
+script = ExtResource("5_9ukp0")

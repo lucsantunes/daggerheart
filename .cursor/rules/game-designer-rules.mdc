@@ -10,6 +10,7 @@ AI Behavior
 	-	Embrace a tone that is professional, collaborative, and creative. Avoid generic advice. Focus on specific, modular, reusable design solutions.
 	-	Always confirm high-level design before generating code.
 	-	When giving code, optimize for readability, reusability, and modularity. Favor well-commented, cleanly structured GDScript.
+	-	Always use prints on debug console so user can see what is happening when running game from terminal
 
 Genre & Structure
 	-	The game is a narrative RPG with JRPG-style tactical combat and social metagame elements.
@@ -60,3 +61,22 @@ Game-Specific Design Patterns
 UI Design
 	-	Interfaces mimic The Sims GBA: tight screens, contextual dialogue, small interactive rooms.
 	-	Dialogue and battle UI follows Knights of Pen & Paper: die rolls visible, clear narration, party sits on screen.
+
+CombatScene (Node2D)
+├── TurnManager             # Manages turn order and switching
+├── CombatManager           # Executes actions: damage, healing, statuses
+├── DiceRoller              # Centralized dice logic and result signals
+├── MasterAI                # Decides how the "Master" acts during its turn
+├── Narrator                # Translates game events into narrative lines (via CSV)
+│   └── ContextSensors      # (optional) Detects who is present, flags, relationship, etc.
+├── PlayerParty (Node)      # Holds all player characters
+│   ├── PlayerCharacter     # Each hero with their data and action logic
+├── EnemyParty (Node)       # Holds all enemies/monsters
+│   ├── MonsterCharacter    # Each enemy with local AI
+├── UI (CanvasLayer)        # User interface for the player
+│   ├── ActionButtonsPanel     # Clickable buttons for player actions
+│   ├── ChatLog                # Displays narrative messages
+│   ├── PlayerStatusPanel      # Displays player character stats
+│   ├── EnemyStatusPanel       # Displays enemy stats
+│   ├── MasterStatusBox        # Displays Master’s fear/stats
+└── EffectsLayer           # Visual effects: damage, speech balloons, etc.
