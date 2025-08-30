@@ -3,11 +3,12 @@ extends Node
 signal duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type: String)
 signal d20_rolled(value: int)
 
+var last_roll_details: Dictionary = {}
 
 func roll_duality(modifier: int = 0) -> void:
 	var hope := randi_range(1, 12)
 	var fear := randi_range(1, 12)
-	var total := hope + modifier
+	var total := hope + fear + modifier
 	var result_type := ""
 	print("[DiceRoller] Duality roll → hope: %d, fear: %d, modifier: %d" % [hope, fear, modifier])
 
@@ -60,8 +61,25 @@ func roll_string(expr: String) -> int:
 
 	var sides := int(sides_str)
 	var total := 0
+	var rolls: Array = []
 	for i in num_dice:
-		total += randi_range(1, sides)
+		var r := randi_range(1, sides)
+		rolls.append(r)
+		total += r
 	var final_total := total + modifier
-	print("[DiceRoller] roll_string '%s' → rolls: %d x d%d, modifier: %d, total: %d" % [expr, num_dice, sides, modifier, final_total])
+	var sum_str := "+".join(rolls.map(func(v): return str(v)))
+	var breakdown := sum_str
+	if modifier != 0:
+		var sign := "+" if modifier > 0 else ""
+		breakdown = "%s %s %d" % [sum_str, sign, modifier]
+	print("[DiceRoller] roll_string '%s' → %s = %d" % [expr, breakdown, final_total])
+	last_roll_details = {
+		"expr": trimmed,
+		"num_dice": num_dice,
+		"sides": sides,
+		"rolls": rolls,
+		"modifier": modifier,
+		"total": final_total,
+		"breakdown": breakdown
+	}
 	return final_total

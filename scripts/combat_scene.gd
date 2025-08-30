@@ -66,6 +66,12 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 		"fear": fear_roll,
 		"total": total
 	})
+	# Narrate breakdown "hope + fear = total"
+	narrator.narrate_custom("system", "all", "roll breakdown", "generic", {
+		"hope": hope_roll,
+		"fear": fear_roll,
+		"total": total
+	})
 
 	# Turn flow: player continues on hope or crit; master reacts on fear
 	if result_type == "fear":

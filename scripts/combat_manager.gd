@@ -39,6 +39,7 @@ func resolve_attack(_attacker: Node, target: Node, damage_roll_string: String) -
 
 	var dice_roller := damage
 	var rolled: int = int(dice_roller.roll_string(damage_roll_string))
+	var breakdown: String = dice_roller.last_roll_details.breakdown if dice_roller.has_variable("last_roll_details") else str(rolled)
 
 	var major := int(target.data.threshold_major)
 	var severe := int(target.data.threshold_severe)
@@ -51,7 +52,7 @@ func resolve_attack(_attacker: Node, target: Node, damage_roll_string: String) -
 		category = "major"
 		hp_loss = 2
 
-	print("[CombatManager] resolve_attack → rolled: %d, major: %d, severe: %d → %s (-%d HP)" % [rolled, major, severe, category, hp_loss])
+	print("[CombatManager] resolve_attack → %s = %d | major: %d, severe: %d → %s (-%d HP)" % [breakdown, rolled, major, severe, category, hp_loss])
 	emit_signal("damage_categorized", target.data.name, rolled, category, hp_loss)
 
 	target.apply_hp_loss(hp_loss)
