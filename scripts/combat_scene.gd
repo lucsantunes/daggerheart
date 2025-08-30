@@ -125,5 +125,6 @@ func _on_damage_categorized(target_name: String, rolled_damage: int, category: S
 		"target": target_name,
 		"rolled": rolled_damage,
 		"category": category,
-		"hp_loss": hp_loss
+		"hp_loss": hp_loss,
+		"breakdown": breakdown
 	})
