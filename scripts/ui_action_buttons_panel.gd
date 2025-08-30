@@ -11,15 +11,18 @@ func _ready():
 	add_child(roll_button)
 	# Initially disabled; enabled at player turn
 	set_buttons_enabled(false)
+	print("[ActionButtonsPanel] Ready. Button created.")
 
 
 func set_buttons_enabled(enabled: bool) -> void:
 	for child in get_children():
 		if child is Button:
 			child.disabled = not enabled
+	print("[ActionButtonsPanel] Buttons enabled:", enabled)
 
 
 func _on_roll_pressed():
+	print("[ActionButtonsPanel] 'Tentar Ação' pressed")
 	emit_signal("action_pressed", "attempt_action")
 
 

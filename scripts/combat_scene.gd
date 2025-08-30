@@ -16,22 +16,28 @@ func _ready():
 
 	# Opening message
 	chat_log.add_entry("Sistema", "O combate começou!", "narration")
+	print("[CombatScene] Ready. Signals connected.")
+	# Ensure we start AFTER connections are made
+	turn_manager.start_player_turn()
 
 func _on_player_turn_started() -> void:
 	action_panel.set_buttons_enabled(true)
 	chat_log.add_entry("Sistema", "Sua vez. Escolha uma ação.", "narration")
+	print("[CombatScene] Player turn started. UI enabled.")
 
 
 func _on_master_turn_started() -> void:
 	action_panel.set_buttons_enabled(false)
 	chat_log.add_entry("Mestre", "Eu reajo às suas escolhas...", "effect")
 	# For now, Master just ends its turn immediately
+	print("[CombatScene] Master turn started. Reacting and ending.")
 	turn_manager.end_master_turn()
 
 
 func _on_action_pressed(action_id: String) -> void:
 	if action_id == "attempt_action":
 		# Perform the core Daggerheart duality roll to resolve the attempt
+		print("[CombatScene] Action pressed:", action_id)
 		dice_roller.roll_duality(0)
 
 
@@ -50,6 +56,8 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 
 	# Turn flow: player continues on hope or crit; master reacts on fear
 	if result_type == "fear":
+		print("[CombatScene] Fear outcome. Passing turn to Master.")
 		turn_manager.end_player_turn()
 	else:
+		print("[CombatScene] Hope or Crit. Player may act again.")
 		chat_log.add_entry("Sistema", "Você pode agir novamente.", "narration")
