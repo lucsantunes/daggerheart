@@ -39,7 +39,9 @@ func resolve_attack(_attacker: Node, target: Node, damage_roll_string: String) -
 
 	var dice_roller := damage
 	var rolled: int = int(dice_roller.roll_string(damage_roll_string))
-	var breakdown: String = dice_roller.last_roll_details.breakdown if dice_roller.has_variable("last_roll_details") else str(rolled)
+	var breakdown: String = str(rolled)
+	if typeof(dice_roller.last_roll_details) == TYPE_DICTIONARY and dice_roller.last_roll_details.has("breakdown"):
+		breakdown = String(dice_roller.last_roll_details["breakdown"])
 
 	var major := int(target.data.threshold_major)
 	var severe := int(target.data.threshold_severe)

@@ -70,8 +70,8 @@ func roll_string(expr: String) -> int:
 	var sum_str := "+".join(rolls.map(func(v): return str(v)))
 	var breakdown := sum_str
 	if modifier != 0:
-		var sign := "+" if modifier > 0 else ""
-		breakdown = "%s %s %d" % [sum_str, sign, modifier]
+		var mod_sign := "+" if modifier > 0 else ""
+		breakdown = "%s %s %d" % [sum_str, mod_sign, modifier]
 	print("[DiceRoller] roll_string '%s' → %s = %d" % [expr, breakdown, final_total])
 	last_roll_details = {
 		"expr": trimmed,
