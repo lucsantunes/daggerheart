@@ -2,7 +2,7 @@ extends Node
 
 # Minimal combat manager to demonstrate effects
 signal damage_applied(target_name: String, amount: int, remaining_hp: int)
-signal damage_categorized(target_name: String, rolled_damage: int, category: String, hp_loss: int)
+signal damage_categorized(target_name: String, rolled_damage: int, category: String, hp_loss: int, breakdown: String)
 
 var target_hp: int = 10
 var target_name: String = "Inimigo"
@@ -55,7 +55,7 @@ func resolve_attack(_attacker: Node, target: Node, damage_roll_string: String) -
 		hp_loss = 2
 
 	print("[CombatManager] resolve_attack → %s = %d | major: %d, severe: %d → %s (-%d HP)" % [breakdown, rolled, major, severe, category, hp_loss])
-	emit_signal("damage_categorized", target.data.name, rolled, category, hp_loss)
+	emit_signal("damage_categorized", target.data.name, rolled, category, hp_loss, breakdown)
 
 	target.apply_hp_loss(hp_loss)
 	emit_signal("damage_applied", target.data.name, hp_loss, target.current_hp)

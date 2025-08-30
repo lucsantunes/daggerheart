@@ -73,6 +73,17 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 		"total": total
 	})
 
+	# Hit check against current target difficulty
+	var hit_success := false
+	if current_target != null:
+		var target_diff: int = int(current_target.data.difficulty)
+		hit_success = total >= target_diff
+		narrator.narrate_custom("system", "all", "attack check", "generic", {
+			"total": total,
+			"difficulty": target_diff,
+			"result": ("HIT" if hit_success else "MISS")
+		})
+
 	# Turn flow: player continues on hope or crit; master reacts on fear
 	if result_type == "fear":
 		print("[CombatScene] Fear outcome. Passing turn to Master.")
@@ -83,8 +94,8 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 
 	# Apply simplified combat effects
 	combat_manager.apply_attempt_outcome(result_type)
-	# On success, resolve attack against current target
-	if result_type == "hope" or result_type == "crit":
+	# On success, resolve attack against current target if hit
+	if (result_type == "hope" or result_type == "crit") and hit_success:
 		if current_target != null:
 			combat_manager.resolve_attack(self, current_target, "2d8")
 			# Narrate the raw damage roll context for clarity
@@ -108,8 +119,8 @@ func _on_damage_applied(target_name: String, amount: int, remaining_hp: int) -> 
 	})
 
 
-func _on_damage_categorized(target_name: String, rolled_damage: int, category: String, hp_loss: int) -> void:
-	print("[CombatScene] Damage category → target: %s, rolled: %d, category: %s, hp_loss: %d" % [target_name, rolled_damage, category, hp_loss])
+func _on_damage_categorized(target_name: String, rolled_damage: int, category: String, hp_loss: int, breakdown: String) -> void:
+	print("[CombatScene] Damage category → target: %s, rolled: %d (%s), category: %s, hp_loss: %d" % [target_name, rolled_damage, breakdown, category, hp_loss])
 	narrator.narrate_custom("system", "all", "damage categorized", "generic", {
 		"target": target_name,
 		"rolled": rolled_damage,
