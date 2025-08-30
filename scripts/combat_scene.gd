@@ -80,7 +80,15 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 	# On success, resolve attack against current target
 	if result_type == "hope" or result_type == "crit":
 		if current_target != null:
-			combat_manager.resolve_attack(self, current_target, "1d8")
+			combat_manager.resolve_attack(self, current_target, "2d8")
+			# Narrate the raw damage roll context for clarity
+			var mj: int = int(current_target.data.threshold_major)
+			var sv: int = int(current_target.data.threshold_severe)
+			narrator.narrate_custom("system", "all", "damage roll", "generic", {
+				"target": current_target.data.name,
+				"major": mj,
+				"severe": sv
+			})
 		else:
 			print("[CombatScene] No target to attack.")
 
@@ -96,3 +104,9 @@ func _on_damage_applied(target_name: String, amount: int, remaining_hp: int) -> 
 
 func _on_damage_categorized(target_name: String, rolled_damage: int, category: String, hp_loss: int) -> void:
 	print("[CombatScene] Damage category → target: %s, rolled: %d, category: %s, hp_loss: %d" % [target_name, rolled_damage, category, hp_loss])
+	narrator.narrate_custom("system", "all", "damage categorized", "generic", {
+		"target": target_name,
+		"rolled": rolled_damage,
+		"category": category,
+		"hp_loss": hp_loss
+	})

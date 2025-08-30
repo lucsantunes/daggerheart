@@ -9,3 +9,5 @@ system,all,roll tie,generic,narration,CRÍTICO! ({hope} = {fear}).
 system,all,roll tie,generic,narration,É isso aí! ({hope} = {fear}).
 system,all,roll tie,generic,narration,CRÍTICO NELES!!! ({hope} = {fear})
 system,all,damage dealt,generic,effect,~{target} toma {amount} de dano! (HP: {hp})
+system,all,damage roll,generic,narration,Teste de dano em {target} (major {major}, severe {severe}).
+system,all,damage categorized,generic,narration,Dano rolado: {rolled} → {category} (-{hp_loss} HP) em {target}.

@@ -8,6 +8,7 @@ var current_hp: int = 0
 var current_stress: int = 0
 
 @onready var name_label := Label.new()
+@onready var diff_label := Label.new()
 @onready var hp_label := Label.new()
 @onready var database_monsters: Node = get_node("/root/DatabaseMonsters")
 
@@ -27,6 +28,9 @@ func _ready():
 	name_label.text = data.name
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(name_label)
+
+	diff_label.text = "Dificuldade: %d" % int(data.difficulty)
+	add_child(diff_label)
 
 	add_child(hp_label)
 	_refresh_hp_text()
