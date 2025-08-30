@@ -9,19 +9,18 @@ func _ready():
 func load_csv(path: String) -> void:
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		print("[DatabaseMonsters] ERROR opening:", path)
+		print("[DatabaseMonsters] ERROR opening: %s" % [path])
 		return
 
-	var header := file.get_csv_line()
-	print("[DatabaseMonsters] Loading:", path)
-	print("[DatabaseMonsters] Header:", ", ".join(header))
+	var _header := file.get_csv_line()
+	print("[DatabaseMonsters] Loading: %s" % [path])
 
 	while not file.eof_reached():
 		var row := file.get_csv_line()
 		if row.size() == 0:
 			continue
+		# Ignore trailing blank lines or malformed rows silently
 		if row.size() < 16:
-			print("[DatabaseMonsters] Skipping short row:", row)
 			continue
 
 		var entry := {
@@ -44,9 +43,9 @@ func load_csv(path: String) -> void:
 		}
 
 		monsters[entry.id] = entry
-		print("[DatabaseMonsters] Loaded:", entry.id, " -> ", entry.name)
+		print("[DatabaseMonsters] Loaded: %s -> %s" % [entry.id, entry.name])
 
-	print("[DatabaseMonsters] Total loaded:", monsters.size())
+	print("[DatabaseMonsters] Total loaded: %d" % [monsters.size()])
 
 
 func _split_list(raw: String, sep: String) -> Array:
@@ -62,9 +61,9 @@ func _split_list(raw: String, sep: String) -> Array:
 func get_monster(id: String) -> Dictionary:
 	if monsters.has(id):
 		var data: Dictionary = monsters[id]
-		print("[DatabaseMonsters] get_monster id:", id, " name:", data.name)
+		print("[DatabaseMonsters] get_monster id: %s, name: %s" % [id, data.name])
 		return data
-	print("[DatabaseMonsters] get_monster MISSING:", id)
+	print("[DatabaseMonsters] get_monster MISSING: %s" % [id])
 	return {}
 
 
