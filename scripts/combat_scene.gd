@@ -5,6 +5,7 @@ extends Node2D
 @onready var narrator = $Narrator
 @onready var turn_manager = $TurnManager
 @onready var action_panel = $UI/ActionButtonsPanel
+@onready var combat_manager = $CombatManager
 
 
 func _ready():
@@ -13,6 +14,7 @@ func _ready():
 	turn_manager.player_turn_started.connect(_on_player_turn_started)
 	turn_manager.master_turn_started.connect(_on_master_turn_started)
 	action_panel.action_pressed.connect(_on_action_pressed)
+	combat_manager.damage_applied.connect(_on_damage_applied)
 
 	# Opening message
 	chat_log.add_entry("Sistema", "O combate começou!", "narration")
@@ -61,3 +63,15 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 	else:
 		print("[CombatScene] Hope or Crit. Player may act again.")
 		chat_log.add_entry("Sistema", "Você pode agir novamente.", "narration")
+
+	# Apply simplified combat effects
+	combat_manager.apply_attempt_outcome(result_type)
+
+
+func _on_damage_applied(target_name: String, amount: int, remaining_hp: int) -> void:
+	print("[CombatScene] Damage applied:", amount, "to", target_name, "remaining HP:", remaining_hp)
+	narrator.narrate_custom("system", "all", "damage dealt", "generic", {
+		"target": target_name,
+		"amount": amount,
+		"hp": remaining_hp
+	})

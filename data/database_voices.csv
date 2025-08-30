@@ -8,3 +8,4 @@ system,all,roll hope,generic,narration,Que sorte a sua com esperança! ({hope} >
 system,all,roll tie,generic,narration,CRÍTICO! ({hope} = {fear}).
 system,all,roll tie,generic,narration,É isso aí! ({hope} = {fear}).
 system,all,roll tie,generic,narration,CRÍTICO NELES!!! ({hope} = {fear})
+system,all,damage dealt,generic,effect,~{target} toma {amount} de dano! (HP: {hp})
