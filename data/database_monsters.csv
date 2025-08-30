@@ -1,0 +1,3 @@
+id,type,name,difficulty,attack_bonus,weapon_name,weapon_roll,weapon_damage_type,experience_tag,experience_bonus,motives_tactics,hp_max,stress_max,threshold_major,threshold_severe,features
+jagged_knife_bandit,standard,Jagged Knife Bandit,12,1,Daggers,1d8+1,phy,Thief,2,Escape;Profit;Steal;Throw smoke,5,3,8,14,Climber | Passive;From Above | Passive | 1d10+1 phy from above
+
