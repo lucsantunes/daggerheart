@@ -8,6 +8,7 @@ extends Node2D
 @onready var combat_manager = $CombatManager
 @onready var enemy_party = $UI/EnemyParty
 @onready var player_party = $UI/PlayerParty
+var current_target: Node = null
 
 
 func _ready():
@@ -17,6 +18,7 @@ func _ready():
 	turn_manager.master_turn_started.connect(_on_master_turn_started)
 	action_panel.action_pressed.connect(_on_action_pressed)
 	combat_manager.damage_applied.connect(_on_damage_applied)
+	combat_manager.damage_categorized.connect(_on_damage_categorized)
 
 	# Opening message
 	chat_log.add_entry("Sistema", "O combate começou!", "narration")
@@ -26,6 +28,10 @@ func _ready():
 
 	# Spawn initial enemy (Bandit)
 	enemy_party.spawn_monster("jagged_knife_bandit")
+	# Set current target as the first enemy for now
+	if enemy_party.get_child_count() > 0:
+		current_target = enemy_party.get_child(0)
+		print("[CombatScene] Current target set to:", current_target)
 
 func _on_player_turn_started() -> void:
 	action_panel.set_buttons_enabled(true)
@@ -71,6 +77,12 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 
 	# Apply simplified combat effects
 	combat_manager.apply_attempt_outcome(result_type)
+	# On success, resolve attack against current target
+	if result_type == "hope" or result_type == "crit":
+		if current_target != null:
+			combat_manager.resolve_attack(self, current_target, "1d8")
+		else:
+			print("[CombatScene] No target to attack.")
 
 
 func _on_damage_applied(target_name: String, amount: int, remaining_hp: int) -> void:
@@ -80,3 +92,7 @@ func _on_damage_applied(target_name: String, amount: int, remaining_hp: int) -> 
 		"amount": amount,
 		"hp": remaining_hp
 	})
+
+
+func _on_damage_categorized(target_name: String, rolled_damage: int, category: String, hp_loss: int) -> void:
+	print("[CombatScene] Damage category → target: %s, rolled: %d, category: %s, hp_loss: %d" % [target_name, rolled_damage, category, hp_loss])

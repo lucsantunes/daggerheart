@@ -2,6 +2,7 @@ extends Node
 
 # Minimal combat manager to demonstrate effects
 signal damage_applied(target_name: String, amount: int, remaining_hp: int)
+signal damage_categorized(target_name: String, rolled_damage: int, category: String, hp_loss: int)
 
 var target_hp: int = 10
 var target_name: String = "Inimigo"
@@ -23,6 +24,38 @@ func apply_attempt_outcome(result_type: String) -> void:
 			pass
 		_:
 			print("[CombatManager] Unknown outcome:", result_type)
+
+
+func resolve_attack(_attacker: Node, target: Node, damage_roll_string: String) -> void:
+	# Target is expected to be a MonsterCharacter-like node with fields used below
+	if not target or not target.has_method("apply_hp_loss"):
+		print("[CombatManager] resolve_attack: invalid target")
+		return
+
+	var damage := get_tree().root.get_node("/root/CombatScene/DiceRoller")
+	if damage == null:
+		print("[CombatManager] DiceRoller not found for resolve_attack")
+		return
+
+	var dice_roller := damage
+	var rolled: int = int(dice_roller.roll_string(damage_roll_string))
+
+	var major := int(target.data.threshold_major)
+	var severe := int(target.data.threshold_severe)
+	var category := "minor"
+	var hp_loss := 1
+	if rolled >= severe:
+		category = "severe"
+		hp_loss = 3
+	elif rolled >= major:
+		category = "major"
+		hp_loss = 2
+
+	print("[CombatManager] resolve_attack → rolled: %d, major: %d, severe: %d → %s (-%d HP)" % [rolled, major, severe, category, hp_loss])
+	emit_signal("damage_categorized", target.data.name, rolled, category, hp_loss)
+
+	target.apply_hp_loss(hp_loss)
+	emit_signal("damage_applied", target.data.name, hp_loss, target.current_hp)
 
 
 func _apply_damage(amount: int) -> void:

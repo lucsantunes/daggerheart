@@ -26,3 +26,42 @@ func roll_d20(modifier: int = 0) -> void:
 	var value := randi_range(1, 20) + modifier
 	print("[DiceRoller] d20 → %d" % [value])
 	emit_signal("d20_rolled", value)
+
+
+func roll_string(expr: String) -> int:
+	# Supports forms like "d8", "1d8", "2d6+3", "3d10-1"
+	var trimmed := expr.strip_edges()
+	if not trimmed.contains("d"):
+		var fallback := int(trimmed)
+		print("[DiceRoller] roll_string '%s' → %d (no 'd' found)" % [expr, fallback])
+		return fallback
+
+	var dice_and_rest := trimmed.split("d", false)
+	var num_dice := 1
+	if dice_and_rest[0] != "":
+		num_dice = int(dice_and_rest[0])
+
+	var rest := String(dice_and_rest[1])
+	var modifier := 0
+	var sides_str := rest
+	var plus_idx := rest.find("+")
+	var minus_idx := rest.find("-")
+	var split_idx := -1
+	if plus_idx != -1 and minus_idx != -1:
+		split_idx = min(plus_idx, minus_idx)
+	elif plus_idx != -1:
+		split_idx = plus_idx
+	elif minus_idx != -1:
+		split_idx = minus_idx
+
+	if split_idx != -1:
+		sides_str = rest.substr(0, split_idx)
+		modifier = int(rest.substr(split_idx, rest.length() - split_idx))
+
+	var sides := int(sides_str)
+	var total := 0
+	for i in num_dice:
+		total += randi_range(1, sides)
+	var final_total := total + modifier
+	print("[DiceRoller] roll_string '%s' → rolls: %d x d%d, modifier: %d, total: %d" % [expr, num_dice, sides, modifier, final_total])
+	return final_total
