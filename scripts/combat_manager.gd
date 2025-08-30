@@ -7,7 +7,7 @@ var target_hp: int = 10
 var target_name: String = "Inimigo"
 
 func _ready():
-	print("[CombatManager] Ready. Target:", target_name, " HP:", target_hp)
+	print("[CombatManager] Ready. Target: %s, HP: %d" % [target_name, target_hp])
 
 
 func apply_attempt_outcome(result_type: String) -> void:
@@ -27,7 +27,7 @@ func apply_attempt_outcome(result_type: String) -> void:
 
 func _apply_damage(amount: int) -> void:
 	target_hp = max(0, target_hp - amount)
-	print("[CombatManager] Damage:", amount, " →", target_name, " HP:", target_hp)
+	print("[CombatManager] Damage: %d → %s, HP: %d" % [amount, target_name, target_hp])
 	emit_signal("damage_applied", target_name, amount, target_hp)
 
 

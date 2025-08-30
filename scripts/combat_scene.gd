@@ -39,7 +39,7 @@ func _on_master_turn_started() -> void:
 func _on_action_pressed(action_id: String) -> void:
 	if action_id == "attempt_action":
 		# Perform the core Daggerheart duality roll to resolve the attempt
-		print("[CombatScene] Action pressed:", action_id)
+		print("[CombatScene] Action pressed: %s" % [action_id])
 		dice_roller.roll_duality(0)
 
 
@@ -69,7 +69,7 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 
 
 func _on_damage_applied(target_name: String, amount: int, remaining_hp: int) -> void:
-	print("[CombatScene] Damage applied:", amount, "to", target_name, "remaining HP:", remaining_hp)
+	print("[CombatScene] Damage applied: %d to %s, remaining HP: %d" % [amount, target_name, remaining_hp])
 	narrator.narrate_custom("system", "all", "damage dealt", "generic", {
 		"target": target_name,
 		"amount": amount,

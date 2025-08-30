@@ -18,7 +18,7 @@ func set_buttons_enabled(enabled: bool) -> void:
 	for child in get_children():
 		if child is Button:
 			child.disabled = not enabled
-	print("[ActionButtonsPanel] Buttons enabled:", enabled)
+	print("[ActionButtonsPanel] Buttons enabled: %s" % [str(enabled)])
 
 
 func _on_roll_pressed():
