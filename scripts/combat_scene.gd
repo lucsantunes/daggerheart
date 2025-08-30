@@ -8,6 +8,8 @@ extends Node2D
 @onready var combat_manager = $CombatManager
 @onready var enemy_party = $UI/EnemyParty
 @onready var player_party = $UI/PlayerParty
+@onready var master_ai = $MasterAI
+@onready var master_status_box = $UI/MasterStatusBox
 var current_target: Node = null
 
 
@@ -19,6 +21,8 @@ func _ready():
 	action_panel.action_pressed.connect(_on_action_pressed)
 	combat_manager.damage_applied.connect(_on_damage_applied)
 	combat_manager.damage_categorized.connect(_on_damage_categorized)
+	master_ai.fear_changed.connect(_on_master_fear_changed)
+	master_ai.turn_finished.connect(_on_master_turn_finished)
 
 	# Opening message
 	chat_log.add_entry("Sistema", "O combate começou!", "narration")
@@ -42,9 +46,8 @@ func _on_player_turn_started() -> void:
 func _on_master_turn_started() -> void:
 	action_panel.set_buttons_enabled(false)
 	chat_log.add_entry("Mestre", "Eu reajo às suas escolhas...", "effect")
-	# For now, Master just ends its turn immediately
-	print("[CombatScene] Master turn started. Reacting and ending.")
-	turn_manager.end_master_turn()
+	print("[CombatScene] Master turn started. Delegating to MasterAI.")
+	master_ai.take_turn(enemy_party, dice_roller, chat_log)
 
 
 func _on_action_pressed(action_id: String) -> void:
@@ -105,7 +108,8 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 	# End or continue turn based on outcome
 	if should_end_after:
 		if result_type == "fear":
-			print("[CombatScene] Fear outcome. Ending player turn after action.")
+			print("[CombatScene] Fear outcome. Incrementing Master Fear and ending turn.")
+			master_ai.add_fear(1)
 		else:
 			print("[CombatScene] Miss. Ending player turn.")
 		turn_manager.end_player_turn()
@@ -132,3 +136,14 @@ func _on_damage_categorized(target_name: String, rolled_damage: int, category: S
 		"hp_loss": hp_loss,
 		"breakdown": breakdown
 	})
+
+
+func _on_master_fear_changed(value: int) -> void:
+	if master_status_box and master_status_box.has_method("set_fear"):
+		master_status_box.set_fear(value)
+	print("[CombatScene] UI updated with Master Fear: %d/12" % value)
+
+
+func _on_master_turn_finished() -> void:
+	print("[CombatScene] MasterAI signaled end of turn.")
+	turn_manager.end_master_turn()
