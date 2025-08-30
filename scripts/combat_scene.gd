@@ -6,6 +6,8 @@ extends Node2D
 @onready var turn_manager = $TurnManager
 @onready var action_panel = $UI/ActionButtonsPanel
 @onready var combat_manager = $CombatManager
+@onready var enemy_party = $UI/EnemyParty
+@onready var player_party = $UI/PlayerParty
 
 
 func _ready():
