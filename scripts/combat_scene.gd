@@ -84,18 +84,11 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 			"result": ("HIT" if hit_success else "MISS")
 		})
 
-	# Turn flow: player continues on hope or crit; master reacts on fear
-	if result_type == "fear":
-		print("[CombatScene] Fear outcome. Passing turn to Master.")
-		turn_manager.end_player_turn()
-	else:
-		print("[CombatScene] Hope or Crit. Player may act again.")
-		chat_log.add_entry("Sistema", "Você pode agir novamente.", "narration")
+	# Determine if turn should end after resolving action (Fear or Miss)
+	var should_end_after := (result_type == "fear") or (not hit_success)
 
-	# Apply simplified combat effects
-	combat_manager.apply_attempt_outcome(result_type)
-	# On success, resolve attack against current target if hit
-	if (result_type == "hope" or result_type == "crit") and hit_success:
+	# Resolve attack only if hit
+	if hit_success:
 		if current_target != null:
 			combat_manager.resolve_attack(self, current_target, "2d8")
 			# Narrate the raw damage roll context for clarity
@@ -108,6 +101,17 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 			})
 		else:
 			print("[CombatScene] No target to attack.")
+
+	# End or continue turn based on outcome
+	if should_end_after:
+		if result_type == "fear":
+			print("[CombatScene] Fear outcome. Ending player turn after action.")
+		else:
+			print("[CombatScene] Miss. Ending player turn.")
+		turn_manager.end_player_turn()
+	else:
+		print("[CombatScene] Hope or Crit with hit. Player may act again.")
+		chat_log.add_entry("Sistema", "Você pode agir novamente.", "narration")
 
 
 func _on_damage_applied(target_name: String, amount: int, remaining_hp: int) -> void:
