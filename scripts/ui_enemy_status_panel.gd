@@ -21,7 +21,11 @@ func _ready() -> void:
 		# Bind future spawns
 		if party.has_signal("child_entered_tree"):
 			party.child_entered_tree.connect(func(node: Node):
-				if node and node.has_signal("hp_changed"):
+				if node and node.has_signal("initialized"):
+					# Defer binding until the monster finished _ready and populated data
+					node.initialized.connect(func(): _bind_monster(node))
+				elif node and node.has_signal("hp_changed"):
+					# Backward compatibility if initialized not present
 					_bind_monster(node)
 			)
 
@@ -29,12 +33,22 @@ func _ready() -> void:
 func _bind_party(party: Node) -> void:
 	for i in party.get_child_count():
 		var mc := party.get_child(i)
-		if mc and mc.has_signal("hp_changed"):
-			_bind_monster(mc)
+		if mc:
+			if mc.has_signal("initialized"):
+				mc.initialized.connect(func(): _bind_monster(mc))
+				# It may already be initialized; try immediate bind as well
+				_bind_monster(mc)
+			elif mc.has_signal("hp_changed"):
+				_bind_monster(mc)
 
 
 func _bind_monster(mc: Node) -> void:
 	if _bound_monsters.has(mc):
+		return
+	# Ensure data exists before creating UI
+	if not mc.has_variable("data"):
+		return
+	if typeof(mc.data) != TYPE_DICTIONARY or mc.data.is_empty():
 		return
 	_bound_monsters.append(mc)
 	var card := _create_card_for(mc)

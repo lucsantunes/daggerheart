@@ -2,6 +2,7 @@ extends VBoxContainer
 
 # Minimal display + state for a monster instance
 signal hp_changed(value: int)
+signal initialized
 @export var monster_id: String = ""
 
 var data: Dictionary = {}
@@ -26,6 +27,8 @@ func _ready():
 	# Visual rendering moved to EnemyStatusPanel; keep tooltip for debugging/inspection
 	tooltip_text = _build_tooltip()
 	print("[MonsterCharacter] Spawned:", data.name, " HP:", current_hp)
+	# Notify UI panels that data is ready for display
+	emit_signal("initialized")
 
 
 func _build_tooltip() -> String:
