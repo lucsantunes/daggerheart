@@ -2,32 +2,29 @@
 
 - **Propósito**: Protótipo de RPG narrativo tático baseado no Daggerheart SRD (dupla rolagem d12: Esperança vs Medo), em Godot 4.4.1 com GDScript.
 - **Camadas do jogo**: Mundo de fantasia (exploração e combate tático) e vida real (diálogo/relacionamentos). A UI se inspira em The Sims GBA e Knights of Pen & Paper.
-- **Arquitetura**: Sistemas modulares e data-driven. Regras de fala/narração vêm de CSV em `data/`. UI desacoplada da lógica (ex.: `ChatLog` apenas renderiza mensagens).
+- **Arquitetura**: Sistemas modulares e data‑driven. Regras, falas e estatísticas vêm de CSV em `data/`. UI desacoplada da lógica (ex.: `ChatLog` apenas renderiza mensagens). Logs detalhados em `logs/godot.log`.
 
 ---
 
 ## Estrutura de pastas (o que cada coisa faz)
 
 - `addons/SimpleFormatOnSave`:
-  - **Plugin de formatação ao salvar** (organiza espaços/linhas) para manter o código consistente.
-
-- `backup/tutorial_jrpg_16bit`:
-  - **Material de referência/backup** (cena, imagens e personagens) que não participa do fluxo atual do jogo.
+  - Plugin de formatação ao salvar (organiza espaços/linhas) para manter o código consistente.
 
 - `data/`:
-  - `database_voices.csv`: Banco de falas/narrações. Linhas são indexadas por quatro chaves: `speaker | listener | situation | variant`, com `style` e `text`.
-  - Arquivos `.translation`: recursos de tradução do Godot gerados a partir do CSV (suporte a localização/ferramentas), não usados diretamente no código atual.
+  - `database_voices.csv`: Banco de falas/narrações. Linhas indexadas por `speaker | listener | situation | variant`, com `style` e `text`.
+  - `database_players.csv` e `database_monsters.csv`: Estatísticas de personagens e monstros (HP, thresholds, arma, etc.).
+  - Arquivos `.translation`: gerados a partir dos CSVs, para suporte a localização/ferramentas.
 
 - `docs/`:
-  - `Daggerheart System Reference Document.pdf`: Referência oficial do sistema Daggerheart.
-  - `Game Design Document.pdf`: Documento de design do jogo.
-  - `RESUMO_DO_REPOSITORIO.md`: Este resumo para consulta rápida semanal.
+  - Documentos de design e referência (Daggerheart SRD e GDD).
+  - Este resumo.
 
 - `scenes/`:
-  - `CombatScene.tscn`: Cena principal atual do protótipo. Instancia UI de chat, rolagens de dado e narrador.
+  - `CombatScene.tscn`: Cena principal do protótipo de combate.
 
 - `scripts/`:
-  - Scripts GDScript principais que implementam dados, rolagens, narração e UI do chat.
+  - Scripts GDScript principais que implementam dados, rolagens, narração, UI e lógica de combate/turnos.
 
 - Arquivos de projeto:
   - `project.godot`, `icon.svg(.import)`: Configurações/metadados do projeto Godot.
@@ -36,96 +33,109 @@
 
 ## Cena principal: `scenes/CombatScene.tscn`
 
-Nodos relevantes da cena:
+Árvore de nós relevante (resumo):
 
-- `CombatScene` (`Node2D`): Nó raiz com script `scripts/combat_scene.gd`.
-- `UI/ChatLog` (`VBoxContainer`): Painel de mensagens na tela, script `scripts/chat_log.gd`.
-- `DiceRoller` (`Node`): Lógica de rolagem, script `scripts/dice_roller.gd`.
-- `Narrator` (`Node`): Monta falas com base no CSV e envia ao `ChatLog`, script `scripts/narrator.gd`.
-
-Fluxo atual (simplificado):
-
-1. A cena inicia e adiciona mensagens de exemplo ao `ChatLog`.
-2. O `Narrator` consulta `DatabaseVoices` para obter frases contextualizadas e as renderiza no `ChatLog`.
-3. O `DiceRoller` está pronto para emitir sinais de rolagem (conexões estão comentadas no momento).
-
----
-
-## Scripts principais (o que fazem)
-
-- `scripts/dice_roller.gd` (Node)
-  - Sinais: `duality_rolled(hope_roll, fear_roll, total, result_type)` e `d20_rolled(value)`.
-  - `roll_duality(modifier=0)`: Rola 2d12 (Esperança vs Medo), classifica o resultado em `"hope" | "fear" | "crit"` e emite o sinal com `total = hope + modifier`.
-  - `roll_d20(modifier=0)`: Rola 1d20 com modificador e emite o valor.
-
-- `scripts/database_voices.gd` (Node)
-  - Carrega `data/database_voices.csv` em um dicionário `voices` indexado por `speaker|listener|situation|variant`.
-  - `get_line(speaker, listener, situation, variant, values={})`: Busca com fallback nas seguintes chaves, nesta ordem:
-    1) `speaker|listener|situation|variant`
-    2) `speaker|all|situation|variant`
-    3) `speaker|all|situation|generic`
-    4) `system|all|situation|generic`
-  - Faz substituição de tokens no texto: cada `{token}` é trocado pelos valores em `values`.
-  - Retorna dicionário `{ speaker, style, text }`. Se não encontrar, retorna mensagem de erro padronizada.
-
-- `scripts/narrator.gd` (Node)
-  - Acessa `UI/ChatLog` e o singleton `DatabaseVoices` para montar mensagens.
-  - `narrate_roll(speaker, listener, result_type, variant, values)`: Constrói `situation = "roll " + result_type` e envia ao `ChatLog`.
-  - `narrate_custom(speaker, listener, situation, variant, values)`: Envia mensagem arbitrária contextualizada ao `ChatLog`.
-
-- `scripts/chat_log.gd` (VBoxContainer)
-  - Mantém um array `messages` e emite `message_added(message_data)` quando renderiza.
-  - `add_entry(speaker, text, style)`: Cria um `RichTextLabel` e formata o texto por `style`:
-    - `talk`: `"[speaker] texto"`
-    - `narration`: `"#speaker# texto"`
-    - `effect`: `"!speaker! texto"`
-    - padrão: `"speaker: texto"`
-
-- `scripts/combat_scene.gd` (Node2D)
-  - Prepara referências a `DiceRoller`, `ChatLog` e `Narrator`.
-  - No `_ready()`, adiciona entradas de exemplo e demonstra `narrator.narrate_roll(...)`.
-  - Conexões de sinais do `DiceRoller` estão comentadas (ativar quando o fluxo de rolagem estiver integrado à UI/eventos).
+- `CombatScene` (`Node2D`) – `scripts/combat_scene.gd`
+- `DiceRoller` (`Node`) – rolagens de dados
+- `Narrator` (`Node`) – narração via CSV
+- `TurnManager` (`Node`) – sinais de início/fim de turnos
+- `CombatManager` (`Node`) – cálculo de dano e categorias (minor/major/severe)
+- `MasterAI` (`Node`) – turno do Mestre
+- `UI` (`CanvasLayer`)
+  - `ActionButtonsPanel` – botão “Tentar Ação”
+  - `ChatScroll/ChatLog` – feed de mensagens
+  - `PlayerStatusPanel` – cards dos heróis (seleção do ator)
+  - `EnemyStatusPanel` – cards dos inimigos (seleção do alvo)
+  - `MasterStatusBox` – exibe o Medo do Mestre
+  - `PlayerParty` – container de instâncias dos jogadores
+  - `EnemyParty` – container de instâncias dos monstros
 
 ---
 
-## Dados e narração (`data/database_voices.csv`)
+## Fluxo de combate atual
 
-- Colunas esperadas (6): `speaker, listener, situation, variant, style, text`.
-- Chaves de busca: combinação de `speaker|listener|situation|variant`.
-- Fallbacks permitem generalizar por `listener = all` e `variant = generic`, além de uma linha de `system` por `situation`.
-- Substituição de tokens: use `{token}` no `text` e passe `values = { token: valor }`.
+1. Inicialização
+   - `PlayerParty` instancia 2 `PlayerCharacter` (template atual: `default_hero`).
+   - `EnemyParty` instancia 2 `MonsterCharacter` (`jagged_knife_bandit`).
+   - Logs detalhados são emitidos para `logs/godot.log` em todos os sistemas.
 
-Exemplo mínimo de linha no CSV:
+2. Seleção por mouse (single select)
+   - `PlayerStatusPanel`: clique em um card seleciona o herói que irá agir (apenas 1 selecionado por vez; highlight verde).
+   - `EnemyStatusPanel`: clique em um card seleciona o alvo do ataque (apenas 1 selecionado por vez; highlight amarelo).
+   - Os painéis emitem `player_selected(player)` e `enemy_selected(enemy)`. O `CombatScene` registra o ator (`current_actor`) e o alvo (`current_target`).
+   - Se um nó for derrotado/liberado, o card é removido, o mapeamento e a seleção são limpos com segurança.
 
-```csv
-speaker,listener,situation,variant,style,text
-Aurora,all,roll hope,generic,talk,Eu senti coragem: {hope} contra {fear}!
-```
+3. Turno do jogador
+   - Clique em “Tentar Ação”:
+     - `DiceRoller.roll_duality(0)` emite Esperança vs Medo; o `Narrator` compõe mensagens.
+     - Checagem de acerto: `total` vs `target.data.difficulty`.
+     - Se acertar: `CombatManager.resolve_attack(actor, target, "2d8")` rola dano e categoriza com base nos thresholds do alvo (`major`, `severe`).
+     - Se resultado for `hope`, o ator ganha 1 Hope.
+     - Fim de turno: encerra em `fear` ou `miss`. Em `hope`/`crit` com acerto, o jogador pode agir novamente.
+
+4. Turno do Mestre
+   - `MasterAI` escolhe o primeiro monstro vivo de `EnemyParty` e o primeiro jogador vivo de `PlayerParty`.
+   - To‑hit: `1d20 + attack_bonus` vs evasion do jogador; se acertar, chama `CombatManager.resolve_attack(monster, player, weapon_roll)` (do monstro).
+   - Ao terminar, emite `turn_finished` e o `TurnManager` inicia o próximo turno do jogador.
+
+5. Derrota e remoção
+   - `PlayerCharacter` e `MonsterCharacter` emitem `defeated`, fazem `hide()` e `queue_free()` quando `HP <= 0`.
+   - Painéis removem cards e limpam seleções ao receber `defeated`.
+   - Unidades derrotadas não podem agir nem ser alvos.
+
+---
+
+## Scripts principais (resumo)
+
+- `scripts/combat_scene.gd`
+  - Orquestra turnos, integra seleção (ator/alvo), conecta sinais e valida ações.
+
+- `scripts/turn_manager.gd`
+  - Sinais: `player_turn_started`, `master_turn_started`, `turn_ended`. Controla a troca de turnos.
+
+- `scripts/combat_manager.gd`
+  - `resolve_attack(attacker, target, damage_roll_string)`: rola dano, classifica (`minor/major/severe`) pelos thresholds do alvo e aplica `apply_hp_loss`.
+
+- `scripts/master_ai.gd`
+  - Executa o turno do Mestre: escolhe primeiro monstro vivo e ataca o primeiro jogador vivo. Atualiza `Medo` quando necessário.
+
+- `scripts/ui_player_status_panel.gd`
+  - Renderiza cards de heróis. Single‑select com highlight; emite `player_selected(player)`. Remove card e limpa seleção em `defeated`.
+
+- `scripts/ui_enemy_status_panel.gd`
+  - Renderiza cards de inimigos. Single‑select com highlight; emite `enemy_selected(enemy)`. Remove card e limpa seleção em `defeated`.
+
+- `scripts/player_party.gd` / `scripts/enemy_party.gd`
+  - Responsáveis por instanciar 2 jogadores e 2 monstros no início. Helpers para obter o primeiro vivo.
+
+- `scripts/player_character.gd` / `scripts/monster_character.gd`
+  - Estado e sinais (`hp_changed`, `defeated`). Ao morrer: `hide()` + `queue_free()`.
+
+- `scripts/dice_roller.gd`
+  - `roll_duality`, `roll_d20_value`, `roll_string` com breakdown.
+
+- `scripts/chat_log.gd` / `scripts/narrator.gd`
+  - Mensagens e narração data‑driven a partir de `DatabaseVoices`.
+
+- `scripts/database_players.gd` / `scripts/database_monsters.gd`
+  - Carregam CSV em memória e expõem getters.
 
 ---
 
 ## Como executar rapidamente
 
 1. Abrir o projeto no Godot 4.4.1.
-2. Rodar a cena `scenes/CombatScene.tscn` (ou defini-la como cena principal no `project.godot`).
-3. Ver o painel de chat à direita exibindo mensagens e testes de narração.
+2. Rodar a cena `scenes/CombatScene.tscn`.
+3. Selecionar um herói (card verde) e um alvo (card amarelo), clicar em “Tentar Ação” e acompanhar o fluxo no `ChatLog` e em `logs/godot.log`.
 
 ---
 
-## Dicas de evolução (quando retomar na próxima semana)
+## Dicas de evolução (próximos passos)
 
-- Conectar sinais do `DiceRoller` e acionar `Narrator` automaticamente ao rolar.
-- Mover frases de exemplo para o CSV e remover strings hardcoded.
-- Definir enums/constantes para `result_type` e `style` para evitar typos.
-- Separar UI de combate da de exploração, mantendo `ChatLog` reutilizável.
-- Expandir `database_voices.csv` com situações: `turn start`, `turn end`, `ability use`, `fail`, etc.
-
----
-
-## Mapa mental rápido
-
-- **Rolagem**: `DiceRoller` → emite sinais.
-- **Narração**: `Narrator` → consulta `DatabaseVoices` → envia para `ChatLog`.
-- **UI**: `ChatLog` → renderiza mensagens conforme `style`.
+- Separar ações em botões: “Atacar” (to‑hit + dano por arma) vs “Tentar Ação” (interações gerais).
+- Tornar armas/rolagens totalmente data‑driven por personagem (arma/ataque do jogador a partir do CSV de players).
+- UI/feedback: efeitos visuais no `EffectsLayer`, ícones de status, tooltips ricos.
+- Estados especiais e condições (stun, bleed, proteção), iniciativa e economia de ações.
+- Persistência de campanha e camadas de vida real impactando domínios/rolagens.
 
 
