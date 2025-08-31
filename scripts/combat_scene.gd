@@ -10,7 +10,10 @@ extends Node2D
 @onready var player_party = $UI/PlayerParty
 @onready var master_ai = $MasterAI
 @onready var master_status_box = $UI/MasterStatusBox
+@onready var enemy_status_panel = $UI/EnemyStatusPanel
+@onready var player_status_panel = $UI/PlayerStatusPanel
 var current_target: Node = null
+var current_actor: Node = null
 
 
 func _ready():
@@ -23,6 +26,19 @@ func _ready():
 	combat_manager.damage_categorized.connect(_on_damage_categorized)
 	master_ai.fear_changed.connect(_on_master_fear_changed)
 	master_ai.turn_finished.connect(_on_master_turn_finished)
+	# Selection signals from UI panels
+	if enemy_status_panel and enemy_status_panel.has_signal("enemy_selected"):
+		enemy_status_panel.enemy_selected.connect(func(enemy: Node):
+			if enemy and enemy.has_method("apply_hp_loss"):
+				current_target = enemy
+				print("[CombatScene] Target selected:", enemy.data.name)
+		)
+	if player_status_panel and player_status_panel.has_signal("player_selected"):
+		player_status_panel.player_selected.connect(func(pc: Node):
+			if pc and pc.has_method("apply_hp_loss"):
+				current_actor = pc
+				print("[CombatScene] Actor selected:", pc.data.name)
+		)
 
 	# Opening message
 	chat_log.add_entry("Sistema", "O combate começou!", "narration")
@@ -30,16 +46,18 @@ func _ready():
 	# Ensure we start AFTER connections are made
 	turn_manager.start_player_turn()
 
-	# Spawn initial enemy (Bandit)
-	enemy_party.spawn_monster("jagged_knife_bandit")
-	# Set current target as the first enemy for now
+	# Remove old single spawn and let parties spawn multiples in their own _ready
+	# Set default selections if available
 	if enemy_party.get_child_count() > 0:
 		current_target = enemy_party.get_child(0)
 		print("[CombatScene] Current target set to:", current_target)
+	if player_party.get_child_count() > 0:
+		current_actor = player_party.get_child(0)
+		print("[CombatScene] Current actor set to:", current_actor)
 
 func _on_player_turn_started() -> void:
 	action_panel.set_buttons_enabled(true)
-	chat_log.add_entry("Sistema", "Sua vez. Escolha uma ação.", "narration")
+	chat_log.add_entry("Sistema", "Sua vez. Selecione um herói e um alvo, então ataque.", "narration")
 	print("[CombatScene] Player turn started. UI enabled.")
 
 
@@ -52,8 +70,15 @@ func _on_master_turn_started() -> void:
 
 func _on_action_pressed(action_id: String) -> void:
 	if action_id == "attempt_action":
+		# Validate selections
+		if current_actor == null or not is_instance_valid(current_actor):
+			chat_log.add_entry("Sistema", "Selecione um herói para agir.", "narration")
+			return
+		if current_target == null or not is_instance_valid(current_target):
+			chat_log.add_entry("Sistema", "Selecione um alvo para atacar.", "narration")
+			return
 		# Perform the core Daggerheart duality roll to resolve the attempt
-		print("[CombatScene] Action pressed: %s" % [action_id])
+		print("[CombatScene] Action pressed: %s by %s vs %s" % [action_id, current_actor.data.name, current_target.data.name])
 		dice_roller.roll_duality(0)
 
 
@@ -76,6 +101,11 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 		"total": total
 	})
 
+	# Guard targets that can be gone mid-resolution
+	if current_target == null or not is_instance_valid(current_target):
+		print("[CombatScene] No valid target at resolution time.")
+		return
+
 	# Hit check against current target difficulty
 	var hit_success := false
 	if current_target != null:
@@ -93,7 +123,7 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 	# Resolve attack only if hit
 	if hit_success:
 		if current_target != null:
-			combat_manager.resolve_attack(self, current_target, "2d8")
+			combat_manager.resolve_attack(current_actor, current_target, "2d8")
 			# Narrate the raw damage roll context for clarity
 			var mj: int = int(current_target.data.threshold_major)
 			var sv: int = int(current_target.data.threshold_severe)
@@ -119,8 +149,8 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 
 	# Hope resource gain for player (once per action outcome)
 	if result_type == "hope":
-		var pc: Node = player_party.get_first_alive_player() if player_party and player_party.has_method("get_first_alive_player") else null
-		if pc and pc.has_method("add_hope"):
+		var pc: Node = current_actor if current_actor and current_actor.has_method("add_hope") else null
+		if pc:
 			pc.add_hope(1)
 			print("[CombatScene] Player gains Hope from hope outcome.")
 

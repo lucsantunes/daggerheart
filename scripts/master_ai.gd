@@ -19,8 +19,11 @@ func take_turn(enemy_party: Node, dice_roller: Node, chat_log: Node, player_part
 		chat_log.add_entry("Mestre", "O Mestre toma uma ação de reação...", "effect")
 
 	var monster: Node = null
-	if enemy_party and enemy_party.get_child_count() > 0:
-		monster = enemy_party.get_child(0)
+	if enemy_party:
+		if enemy_party.has_method("get_first_alive_monster"):
+			monster = enemy_party.get_first_alive_monster()
+		elif enemy_party.get_child_count() > 0:
+			monster = enemy_party.get_child(0)
 
 	if monster == null:
 		print("[MasterAI] No monsters available. Ending turn.")

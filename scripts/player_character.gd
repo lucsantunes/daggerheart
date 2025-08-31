@@ -73,6 +73,8 @@ func apply_hp_loss(units: int) -> void:
 	if current_hp <= 0:
 		emit_signal("defeated")
 		print("[PlayerCharacter] %s defeated." % data.name)
+		hide()
+		call_deferred("queue_free")
 
 
 func add_hope(amount: int) -> void:

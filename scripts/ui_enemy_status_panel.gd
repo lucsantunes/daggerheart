@@ -1,8 +1,11 @@
 extends HBoxContainer
 
 @export var party_path: NodePath
+signal enemy_selected(enemy: Node)
 
 var _bound_monsters: Array = []
+var _card_to_monster: Dictionary = {}
+var _selected_card: VBoxContainer = null
 
 
 func _ready() -> void:
@@ -55,15 +58,36 @@ func _bind_monster(mc: Node) -> void:
 		return
 	_bound_monsters.append(mc)
 	var card := _create_card_for(mc)
+	_card_to_monster[card] = mc
 	add_child(card)
 	# Connect updates
 	mc.hp_changed.connect(func(_v): _refresh_card(card, mc))
+	if mc.has_signal("defeated"):
+		mc.defeated.connect(func():
+			# Cleanup card and mappings safely
+			if is_instance_valid(card) and card.get_parent() == self:
+				remove_child(card)
+				card.queue_free()
+			if _selected_card == card:
+				_selected_card = null
+			_card_to_monster.erase(card)
+			_bound_monsters.erase(mc)
+			_update_selection_highlight()
+		)
 	print("[EnemyStatusPanel] Bound monster:", str(mc.data.get("name", "?")))
+	# Click to select target
+	card.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_select_card(card)
+			enemy_selected.emit(mc)
+	)
 
 
 func _create_card_for(mc: Node) -> VBoxContainer:
 	var card := VBoxContainer.new()
 	card.name = "EnemyCard_" + str(mc.data.get("name", "?"))
+	card.focus_mode = Control.FOCUS_CLICK
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
 	var name_label := Label.new()
 	name_label.text = str(mc.data.get("name", "?"))
 	var meta := Label.new()
@@ -93,5 +117,20 @@ func _refresh_card(card: VBoxContainer, mc: Node) -> void:
 	var mj: int = int(mc.data.get("threshold_major", 0))
 	var sv: int = int(mc.data.get("threshold_severe", 0))
 	hp.text = "HP %d/%d (M %d S %d)" % [int(mc.current_hp), int(mc.data.get("hp_max", 0)), mj, sv]
+
+
+func _select_card(card: VBoxContainer) -> void:
+	_selected_card = card
+	_update_selection_highlight()
+
+
+func _update_selection_highlight() -> void:
+	for c in _card_to_monster.keys():
+		if not is_instance_valid(c):
+			continue
+		if c == _selected_card:
+			c.modulate = Color(1, 1, 0.8)
+		else:
+			c.modulate = Color(1, 1, 1)
 
 

@@ -3,6 +3,7 @@ extends VBoxContainer
 # Minimal display + state for a monster instance
 signal hp_changed(value: int)
 signal initialized
+signal defeated
 @export var monster_id: String = ""
 
 var data: Dictionary = {}
@@ -46,5 +47,10 @@ func apply_hp_loss(units: int) -> void:
 	current_hp = max(0, current_hp - units)
 	hp_changed.emit(current_hp)
 	print("[MonsterCharacter] %s loses %d HP → %d" % [data.name, units, current_hp])
+	if current_hp <= 0:
+		print("[MonsterCharacter] %s defeated." % data.name)
+		emit_signal("defeated")
+		hide()
+		call_deferred("queue_free")
 
 
