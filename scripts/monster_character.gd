@@ -1,15 +1,13 @@
 extends VBoxContainer
 
 # Minimal display + state for a monster instance
+signal hp_changed(value: int)
 @export var monster_id: String = ""
 
 var data: Dictionary = {}
 var current_hp: int = 0
 var current_stress: int = 0
 
-@onready var name_label := Label.new()
-@onready var diff_label := Label.new()
-@onready var hp_label := Label.new()
 @onready var database_monsters: Node = get_node("/root/DatabaseMonsters")
 
 func _ready():
@@ -25,24 +23,9 @@ func _ready():
 	current_hp = data.hp_max
 	current_stress = data.stress_max
 
-	name_label.text = data.name
-	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	add_child(name_label)
-
-	diff_label.text = "Dificuldade: %d" % int(data.difficulty)
-	add_child(diff_label)
-
-	add_child(hp_label)
-	_refresh_hp_text()
-
+	# Visual rendering moved to EnemyStatusPanel; keep tooltip for debugging/inspection
 	tooltip_text = _build_tooltip()
 	print("[MonsterCharacter] Spawned:", data.name, " HP:", current_hp)
-
-
-func _refresh_hp_text():
-	var mj: int = int(data.threshold_major)
-	var sv: int = int(data.threshold_severe)
-	hp_label.text = "HP: %d (major %d, severe %d)" % [current_hp, mj, sv]
 
 
 func _build_tooltip() -> String:
@@ -58,7 +41,7 @@ func _build_tooltip() -> String:
 
 func apply_hp_loss(units: int) -> void:
 	current_hp = max(0, current_hp - units)
-	_refresh_hp_text()
+	hp_changed.emit(current_hp)
 	print("[MonsterCharacter] %s loses %d HP → %d" % [data.name, units, current_hp])
 
 

@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://scripts/master_ai.gd" id="10_yw0m7"]
 [ext_resource type="Script" path="res://scripts/ui_master_status_box.gd" id="11_n3k4h"]
 [ext_resource type="Script" path="res://scripts/ui_player_status_panel.gd" id="12_cy1v7"]
+[ext_resource type="Script" path="res://scripts/ui_enemy_status_panel.gd" id="13_km2h1"]
 
 [node name="CombatScene" type="Node2D"]
 script = ExtResource("1_rx5ct")
@@ -85,3 +86,11 @@ offset_right = 1600.0
 offset_bottom = 920.0
 size_flags_horizontal = 3
 script = ExtResource("12_cy1v7")
+
+[node name="EnemyStatusPanel" type="HBoxContainer" parent="UI"]
+offset_left = 48.0
+offset_top = 128.0
+offset_right = 1600.0
+offset_bottom = 184.0
+size_flags_horizontal = 3
+script = ExtResource("13_km2h1")
