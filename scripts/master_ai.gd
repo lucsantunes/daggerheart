@@ -61,11 +61,15 @@ func take_turn(enemy_party: Node, dice_roller: Node, chat_log: Node, player_part
 				var attack_bonus: int = 0
 				if typeof(monster) == TYPE_OBJECT and typeof(monster.data) == TYPE_DICTIONARY and monster.data.has("attack_bonus"):
 					attack_bonus = int(monster.data.attack_bonus)
-				var d20 := 0
-				if dice_roller and dice_roller.has_method("roll_d20"):
-					d20 = randi_range(1, 20) + attack_bonus
-					print("[MasterAI] To-Hit roll: d20 + %d = %d vs evasion %d" % [attack_bonus, d20, int(player_target.data.evasion)])
-				var hit := d20 >= int(player_target.data.evasion)
+				var to_hit: int = 0
+				if dice_roller and dice_roller.has_method("roll_d20") and dice_roller.has_signal("d20_rolled"):
+					# Use DiceRoller so logs show the d20 roll; await the emitted value (already includes modifier)
+					dice_roller.roll_d20(attack_bonus)
+					to_hit = int(await dice_roller.d20_rolled)
+				else:
+					to_hit = randi_range(1, 20) + attack_bonus
+				print("[MasterAI] To-Hit roll: d20 + %d = %d vs evasion %d" % [attack_bonus, to_hit, int(player_target.data.evasion)])
+				var hit := to_hit >= int(player_target.data.evasion)
 				if hit:
 					print("[MasterAI] HIT. Resolving damage into %s" % player_target.data.name)
 					combat_manager.resolve_attack(monster, player_target, weapon_roll)
