@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://d3yp4n5rwrko1"
+
+[deps]
+
+files=["res://data/database_players.name.translation", "res://data/database_players.evasion.translation", "res://data/database_players.armor.translation", "res://data/database_players.hp.translation", "res://data/database_players.stress.translation", "res://data/database_players.threshold.translation", "res://data/database_players.threshold.translation", "res://data/database_players.agility.translation", "res://data/database_players.strength.translation", "res://data/database_players.finesse.translation", "res://data/database_players.instinct.translation", "res://data/database_players.presence.translation", "res://data/database_players.knowledge.translation", "res://data/database_players.hope.translation", "res://data/database_players.experience.translation", "res://data/database_players.experience.translation", "res://data/database_players.weapon.translation", "res://data/database_players.weapon.translation", "res://data/database_players.weapon.translation", "res://data/database_players.armor.translation", "res://data/database_players.armor.translation", "res://data/database_players.armor.translation", "res://data/database_players.gold.translation"]
+
+source_file="res://data/database_players.csv"
+dest_files=["res://data/database_players.name.translation", "res://data/database_players.evasion.translation", "res://data/database_players.armor.translation", "res://data/database_players.hp.translation", "res://data/database_players.stress.translation", "res://data/database_players.threshold.translation", "res://data/database_players.threshold.translation", "res://data/database_players.agility.translation", "res://data/database_players.strength.translation", "res://data/database_players.finesse.translation", "res://data/database_players.instinct.translation", "res://data/database_players.presence.translation", "res://data/database_players.knowledge.translation", "res://data/database_players.hope.translation", "res://data/database_players.experience.translation", "res://data/database_players.experience.translation", "res://data/database_players.weapon.translation", "res://data/database_players.weapon.translation", "res://data/database_players.weapon.translation", "res://data/database_players.armor.translation", "res://data/database_players.armor.translation", "res://data/database_players.armor.translation", "res://data/database_players.gold.translation"]
+
+[params]
+
+compress=true
+delimiter=0
