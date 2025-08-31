@@ -5,6 +5,7 @@ signal defeated
 signal hope_changed(current_hope: int)
 
 @export var player_id: String = ""
+@export var render_inline_ui: bool = false
 
 var data: Dictionary = {}
 var current_hp: int = 0
@@ -31,17 +32,18 @@ func _ready() -> void:
 	current_stress = int(data.stress_max)
 	current_hope = 0
 
-	name_label.text = data.name
-	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	add_child(name_label)
+	if render_inline_ui:
+		name_label.text = data.name
+		name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		add_child(name_label)
 
-	stats_label.text = "Evasion: %d | Armor: %d | Hope: %d/%d" % [int(data.evasion), int(data.armor), current_hope, int(data.hope_max)]
-	add_child(stats_label)
+		stats_label.text = "Evasion: %d | Armor: %d | Hope: %d/%d" % [int(data.evasion), int(data.armor), current_hope, int(data.hope_max)]
+		add_child(stats_label)
 
-	add_child(hp_label)
-	_refresh_hp_text()
+		add_child(hp_label)
+		_refresh_hp_text()
 
-	tooltip_text = _build_tooltip()
+		tooltip_text = _build_tooltip()
 	print("[PlayerCharacter] Spawned:", data.name, " HP:", current_hp)
 
 

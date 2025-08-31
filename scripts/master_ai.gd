@@ -53,12 +53,26 @@ func take_turn(enemy_party: Node, dice_roller: Node, chat_log: Node, player_part
 		if chat_log and chat_log.has_method("add_entry"):
 			chat_log.add_entry("Mestre", "%s ataca com %s (%s = %d)" % [monster_name, weapon_name, breakdown, total], "effect")
 
-		# If player target exists and combat manager provided, resolve attack into player
+		# If player target exists and combat manager provided, perform to-hit check then damage
 		if player_party and combat_manager and player_party.has_method("get_first_alive_player"):
 			var player_target: Node = player_party.get_first_alive_player()
 			if player_target:
-				print("[MasterAI] Resolving monster attack into player target: %s" % player_target.data.name)
-				combat_manager.resolve_attack(monster, player_target, weapon_roll)
+				# To-hit: 1d20 + attack_bonus vs player evasion
+				var attack_bonus: int = 0
+				if typeof(monster) == TYPE_OBJECT and typeof(monster.data) == TYPE_DICTIONARY and monster.data.has("attack_bonus"):
+					attack_bonus = int(monster.data.attack_bonus)
+				var d20 := 0
+				if dice_roller and dice_roller.has_method("roll_d20"):
+					d20 = randi_range(1, 20) + attack_bonus
+					print("[MasterAI] To-Hit roll: d20 + %d = %d vs evasion %d" % [attack_bonus, d20, int(player_target.data.evasion)])
+				var hit := d20 >= int(player_target.data.evasion)
+				if hit:
+					print("[MasterAI] HIT. Resolving damage into %s" % player_target.data.name)
+					combat_manager.resolve_attack(monster, player_target, weapon_roll)
+				else:
+					print("[MasterAI] MISS against %s" % player_target.data.name)
+					if chat_log and chat_log.has_method("add_entry"):
+						chat_log.add_entry("Mestre", "%s erra o ataque." % monster_name, "narration")
 	else:
 		print("[MasterAI] DiceRoller not available; cannot roll damage.")
 

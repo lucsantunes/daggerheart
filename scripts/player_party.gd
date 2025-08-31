@@ -5,6 +5,7 @@ func _ready():
 	if get_child_count() == 0:
 		var pc := preload("res://scripts/player_character.gd").new()
 		pc.player_id = "default_hero"
+		pc.render_inline_ui = false
 		add_child(pc)
 		print("[PlayerParty] Spawned player id:", pc.player_id)
 
