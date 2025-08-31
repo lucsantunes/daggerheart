@@ -14,3 +14,6 @@
 
 # Godot C#/.NET (if enabled)
 .mono/
+
+# Local files
+/local/
