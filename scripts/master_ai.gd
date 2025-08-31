@@ -63,9 +63,26 @@ func take_turn(enemy_party: Node, dice_roller: Node, chat_log: Node, player_part
 					attack_bonus = int(monster.data.attack_bonus)
 				var to_hit: int = 0
 				if dice_roller and dice_roller.has_method("roll_d20") and dice_roller.has_signal("d20_rolled"):
-					# Use DiceRoller so logs show the d20 roll; await the emitted value (already includes modifier)
+					var received := false
+					var hit_value := 0
+					var handler = func(v: int) -> void:
+						hit_value = v
+						received = true
+					dice_roller.d20_rolled.connect(handler)
 					dice_roller.roll_d20(attack_bonus)
-					to_hit = int(await dice_roller.d20_rolled)
+					var safe_wait := 0
+					while not received and safe_wait < 60:
+						await get_tree().process_frame
+						safe_wait += 1
+					if dice_roller.d20_rolled.is_connected(handler):
+						dice_roller.d20_rolled.disconnect(handler)
+					if not received:
+						# Fallback if signal wasn't received in time
+						print("[MasterAI] WARNING: d20_rolled not received after %d frames. Using fallback RNG." % safe_wait)
+						to_hit = randi_range(1, 20) + attack_bonus
+					else:
+						print("[MasterAI] d20_rolled received: %d" % hit_value)
+						to_hit = hit_value
 				else:
 					to_hit = randi_range(1, 20) + attack_bonus
 				print("[MasterAI] To-Hit roll: d20 + %d = %d vs evasion %d" % [attack_bonus, to_hit, int(player_target.data.evasion)])
