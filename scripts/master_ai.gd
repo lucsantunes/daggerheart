@@ -43,15 +43,9 @@ func take_turn(enemy_party: Node, dice_roller: Node, chat_log: Node, player_part
 				if monster.data.has("name"):
 					monster_name = String(monster.data.name)
 
-	var total := 0
-	if dice_roller and dice_roller.has_method("roll_string"):
-		total = int(dice_roller.roll_string(weapon_roll))
-		var breakdown := str(total)
-		if typeof(dice_roller.last_roll_details) == TYPE_DICTIONARY and dice_roller.last_roll_details.has("breakdown"):
-			breakdown = str(dice_roller.last_roll_details["breakdown"])
-		print("[MasterAI] %s orders %s to strike (%s = %d)" % [monster_name, weapon_name, breakdown, total])
-		if chat_log and chat_log.has_method("add_entry"):
-			chat_log.add_entry("Mestre", "%s ataca com %s (%s = %d)" % [monster_name, weapon_name, breakdown, total], "effect")
+	# Announce intent only; do not roll damage before hit check
+	if chat_log and chat_log.has_method("add_entry"):
+		chat_log.add_entry("Mestre", "%s prepara %s..." % [monster_name, weapon_name], "narration")
 
 		# If player target exists and combat manager provided, perform to-hit check then damage
 		if player_party and combat_manager and player_party.has_method("get_first_alive_player"):
@@ -68,13 +62,15 @@ func take_turn(enemy_party: Node, dice_roller: Node, chat_log: Node, player_part
 					to_hit = randi_range(1, 20) + attack_bonus
 				print("[MasterAI] To-Hit roll: d20 + %d = %d vs evasion %d" % [attack_bonus, to_hit, int(player_target.data.evasion)])
 				var hit := to_hit >= int(player_target.data.evasion)
+				if chat_log and chat_log.has_method("add_entry"):
+					var ev := int(player_target.data.evasion)
+					var outcome := ("ACERTO" if hit else "ERRO")
+					chat_log.add_entry("Mestre", "Teste de acerto: d20 + %d = %d vs Evasão %d → %s" % [attack_bonus, to_hit, ev, outcome], "narration")
 				if hit:
 					print("[MasterAI] HIT. Resolving damage into %s" % player_target.data.name)
 					combat_manager.resolve_attack(monster, player_target, weapon_roll)
 				else:
 					print("[MasterAI] MISS against %s" % player_target.data.name)
-					if chat_log and chat_log.has_method("add_entry"):
-						chat_log.add_entry("Mestre", "%s erra o ataque." % monster_name, "narration")
 	else:
 		print("[MasterAI] DiceRoller not available; cannot roll damage.")
 
