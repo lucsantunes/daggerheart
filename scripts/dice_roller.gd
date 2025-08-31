@@ -23,11 +23,12 @@ func roll_duality(modifier: int = 0) -> void:
 	emit_signal("duality_rolled", hope, fear, total, result_type)
 
 
-func roll_d20(modifier: int = 0) -> void:
+func roll_d20_value(modifier: int = 0) -> int:
+	# Synchronous d20 that also emits the usual signal for observers
 	var value := randi_range(1, 20) + modifier
 	print("[DiceRoller] d20 → %d" % [value])
 	emit_signal("d20_rolled", value)
-
+	return value
 
 func roll_string(expr: String) -> int:
 	# Supports forms like "d8", "1d8", "2d6+3", "3d10-1"
