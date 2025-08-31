@@ -117,7 +117,10 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 		"total": total
 	})
 
-	# Guard targets that can be gone mid-resolution
+	# Guard selections that can be gone mid-resolution
+	if current_actor == null or not is_instance_valid(current_actor):
+		print("[CombatScene] No valid actor at resolution time.")
+		return
 	if current_target == null or not is_instance_valid(current_target):
 		print("[CombatScene] No valid target at resolution time.")
 		return
@@ -139,12 +142,15 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 	# Resolve attack only if hit
 	if hit_success:
 		if current_target != null:
-			combat_manager.resolve_attack(current_actor, current_target, "2d8")
-			# Narrate the raw damage roll context for clarity
-			var mj: int = int(current_target.data.threshold_major)
-			var sv: int = int(current_target.data.threshold_severe)
+			# Snapshot values before potential defeat/queue_free
+			var target_ref := current_target
+			var target_name := String(target_ref.data.name)
+			var mj: int = int(target_ref.data.threshold_major)
+			var sv: int = int(target_ref.data.threshold_severe)
+			combat_manager.resolve_attack(current_actor, target_ref, "2d8")
+			# Narrate the raw damage roll context for clarity (using snapshot)
 			narrator.narrate_custom("system", "all", "damage roll", "generic", {
-				"target": current_target.data.name,
+				"target": target_name,
 				"major": mj,
 				"severe": sv
 			})
