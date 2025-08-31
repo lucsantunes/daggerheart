@@ -32,12 +32,29 @@ func _ready():
 			if enemy and enemy.has_method("apply_hp_loss"):
 				current_target = enemy
 				print("[CombatScene] Target selected:", enemy.data.name)
+				# Clear target if it gets defeated or freed
+				if enemy.has_signal("defeated"):
+					enemy.defeated.connect(func():
+						if current_target == enemy:
+							current_target = null
+							print("[CombatScene] Cleared target (defeated).")
+					)
 		)
 	if player_status_panel and player_status_panel.has_signal("player_selected"):
 		player_status_panel.player_selected.connect(func(pc: Node):
 			if pc and pc.has_method("apply_hp_loss"):
 				current_actor = pc
 				print("[CombatScene] Actor selected:", pc.data.name)
+				# Enable actions when a player (actor) is selected
+				action_panel.set_buttons_enabled(true)
+				# Clear actor and disable if it gets defeated or freed
+				if pc.has_signal("defeated"):
+					pc.defeated.connect(func():
+						if current_actor == pc:
+							current_actor = null
+							action_panel.set_buttons_enabled(false)
+							print("[CombatScene] Cleared actor (defeated).")
+					)
 		)
 
 	# Opening message
@@ -46,19 +63,16 @@ func _ready():
 	# Ensure we start AFTER connections are made
 	turn_manager.start_player_turn()
 
-	# Remove old single spawn and let parties spawn multiples in their own _ready
-	# Set default selections if available
-	if enemy_party.get_child_count() > 0:
-		current_target = enemy_party.get_child(0)
-		print("[CombatScene] Current target set to:", current_target)
-	if player_party.get_child_count() > 0:
-		current_actor = player_party.get_child(0)
-		print("[CombatScene] Current actor set to:", current_actor)
+	# No seleção inicial automática; o jogador deve clicar para escolher ator/alvo
+	current_target = null
+	current_actor = null
 
 func _on_player_turn_started() -> void:
-	action_panel.set_buttons_enabled(true)
+	# Habilita o botão somente se houver ator selecionado
+	var enable_actions := (current_actor != null and is_instance_valid(current_actor))
+	action_panel.set_buttons_enabled(enable_actions)
 	chat_log.add_entry("Sistema", "Sua vez. Selecione um herói e um alvo, então ataque.", "narration")
-	print("[CombatScene] Player turn started. UI enabled.")
+	print("[CombatScene] Player turn started. UI set enabled=%s." % [str(enable_actions)])
 
 
 func _on_master_turn_started() -> void:
@@ -73,6 +87,8 @@ func _on_action_pressed(action_id: String) -> void:
 		# Validate selections
 		if current_actor == null or not is_instance_valid(current_actor):
 			chat_log.add_entry("Sistema", "Selecione um herói para agir.", "narration")
+			# Segurança extra: manter botão desabilitado até selecionar um ator
+			action_panel.set_buttons_enabled(false)
 			return
 		if current_target == null or not is_instance_valid(current_target):
 			chat_log.add_entry("Sistema", "Selecione um alvo para atacar.", "narration")
