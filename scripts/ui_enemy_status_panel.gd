@@ -46,9 +46,12 @@ func _bind_monster(mc: Node) -> void:
 	if _bound_monsters.has(mc):
 		return
 	# Ensure data exists before creating UI
-	if not mc.has_variable("data"):
-		return
-	if typeof(mc.data) != TYPE_DICTIONARY or mc.data.is_empty():
+	var bag: Dictionary = {}
+	if mc and mc.has_method("get"):
+		var maybe = mc.get("data")
+		if typeof(maybe) == TYPE_DICTIONARY:
+			bag = maybe
+	if bag.is_empty():
 		return
 	_bound_monsters.append(mc)
 	var card := _create_card_for(mc)
