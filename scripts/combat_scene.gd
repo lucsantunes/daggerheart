@@ -47,7 +47,7 @@ func _on_master_turn_started() -> void:
 	action_panel.set_buttons_enabled(false)
 	chat_log.add_entry("Mestre", "Eu reajo às suas escolhas...", "effect")
 	print("[CombatScene] Master turn started. Delegating to MasterAI.")
-	master_ai.take_turn(enemy_party, dice_roller, chat_log)
+	master_ai.take_turn(enemy_party, dice_roller, chat_log, player_party, combat_manager)
 
 
 func _on_action_pressed(action_id: String) -> void:
@@ -116,6 +116,13 @@ func _on_duality_rolled(hope_roll: int, fear_roll: int, total: int, result_type:
 	else:
 		print("[CombatScene] Hope or Crit with hit. Player may act again.")
 		chat_log.add_entry("Sistema", "Você pode agir novamente.", "narration")
+
+	# Hope resource gain for player (once per action outcome)
+	if result_type == "hope":
+		var pc: Node = player_party.get_first_alive_player() if player_party and player_party.has_method("get_first_alive_player") else null
+		if pc and pc.has_method("add_hope"):
+			pc.add_hope(1)
+			print("[CombatScene] Player gains Hope from hope outcome.")
 
 
 func _on_damage_applied(target_name: String, amount: int, remaining_hp: int) -> void:

@@ -13,7 +13,7 @@ func add_fear(amount: int) -> void:
 	emit_signal("fear_changed", fear_count)
 
 
-func take_turn(enemy_party: Node, dice_roller: Node, chat_log: Node) -> void:
+func take_turn(enemy_party: Node, dice_roller: Node, chat_log: Node, player_party: Node = null, combat_manager: Node = null) -> void:
 	print("[MasterAI] Taking turn.")
 	if chat_log and chat_log.has_method("add_entry"):
 		chat_log.add_entry("Mestre", "O Mestre toma uma ação de reação...", "effect")
@@ -52,6 +52,13 @@ func take_turn(enemy_party: Node, dice_roller: Node, chat_log: Node) -> void:
 		print("[MasterAI] %s orders %s to strike (%s = %d)" % [monster_name, weapon_name, breakdown, total])
 		if chat_log and chat_log.has_method("add_entry"):
 			chat_log.add_entry("Mestre", "%s ataca com %s (%s = %d)" % [monster_name, weapon_name, breakdown, total], "effect")
+
+		# If player target exists and combat manager provided, resolve attack into player
+		if player_party and combat_manager and player_party.has_method("get_first_alive_player"):
+			var player_target: Node = player_party.get_first_alive_player()
+			if player_target:
+				print("[MasterAI] Resolving monster attack into player target: %s" % player_target.data.name)
+				combat_manager.resolve_attack(monster, player_target, weapon_roll)
 	else:
 		print("[MasterAI] DiceRoller not available; cannot roll damage.")
 
