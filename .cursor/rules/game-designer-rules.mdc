@@ -10,7 +10,7 @@ AI Behavior
 	-	Embrace a tone that is professional, collaborative, and creative. Avoid generic advice. Focus on specific, modular, reusable design solutions.
 	-	Always confirm high-level design before generating code.
 	-	When giving code, optimize for readability, reusability, and modularity. Favor well-commented, cleanly structured GDScript.
-	-	Always use prints on debug console so user can see what is happening when running game from terminal
+	-	Always use prints on /logs/godot.log file so you can see what is happening when running game according to prints you distributed on each part of code
 
 Genre & Structure
 	-	The game is a narrative RPG with JRPG-style tactical combat and social metagame elements.
