@@ -1,0 +1,3 @@
+id,name,evasion,armor,hp_max,stress_max,threshold_major,threshold_severe,agility,strength,finesse,instinct,presence,knowledge,hope_max,experience_tag,experience_bonus,weapon_name,weapon_roll,weapon_damage_type,armor_name,armor_evasion_bonus,armor_armor_bonus,gold
+default_hero,Default Hero,10,0,6,6,8,14,10,10,10,10,10,10,6,Adventurer,1,Sword,1d8+1,phy,None,0,0,0
+
