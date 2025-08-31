@@ -41,14 +41,14 @@ func _bind_monster(mc: Node) -> void:
 	add_child(card)
 	# Connect updates
 	mc.hp_changed.connect(func(_v): _refresh_card(card, mc))
-	print("[EnemyStatusPanel] Bound monster:", mc.data.name)
+	print("[EnemyStatusPanel] Bound monster:", str(mc.data.get("name", "?")))
 
 
 func _create_card_for(mc: Node) -> VBoxContainer:
 	var card := VBoxContainer.new()
-	card.name = "EnemyCard_" + mc.data.name
+	card.name = "EnemyCard_" + str(mc.data.get("name", "?"))
 	var name_label := Label.new()
-	name_label.text = mc.data.name
+	name_label.text = str(mc.data.get("name", "?"))
 	var meta := Label.new()
 	meta.name = "Meta"
 	var hp := Label.new()
@@ -64,12 +64,17 @@ func _refresh_card(card: VBoxContainer, mc: Node) -> void:
 	var meta: Label = card.get_node("Meta")
 	var hp: Label = card.get_node("HP")
 	# Show key monster info for combat readability
-	var diff := int(mc.data.difficulty)
-	var weapon := "%s | %s %s" % [mc.data.weapon_name, mc.data.weapon_roll, mc.data.weapon_damage_type]
-	var tags := "; ".join(mc.data.features)
+	var diff := int(mc.data.get("difficulty", 0))
+	var weapon := "%s | %s %s" % [
+		str(mc.data.get("weapon_name", "?")),
+		str(mc.data.get("weapon_roll", "?")),
+		str(mc.data.get("weapon_damage_type", "?"))
+	]
+	var features: Array = mc.data.get("features", [])
+	var tags := "; ".join(features)
 	meta.text = "Dif %d | %s | %s" % [diff, weapon, tags]
-	var mj: int = int(mc.data.threshold_major)
-	var sv: int = int(mc.data.threshold_severe)
-	hp.text = "HP %d/%d (M %d S %d)" % [int(mc.current_hp), int(mc.data.hp_max), mj, sv]
+	var mj: int = int(mc.data.get("threshold_major", 0))
+	var sv: int = int(mc.data.get("threshold_severe", 0))
+	hp.text = "HP %d/%d (M %d S %d)" % [int(mc.current_hp), int(mc.data.get("hp_max", 0)), mj, sv]
 
 
