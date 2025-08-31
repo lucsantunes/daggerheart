@@ -5,3 +5,12 @@
 .godot/
 /android/
 /logs/
+
+# Godot generated/imported artifacts
+.import/
+*.import
+*.translation
+*.uid
+
+# Godot C#/.NET (if enabled)
+.mono/
